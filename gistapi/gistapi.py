@@ -10,8 +10,8 @@ providing a search across all public Gists for a given Github account.
 
 from flask import Flask, jsonify, request, current_app, Blueprint
 
-import helpers
-from client import GitHubClient
+from .helpers import search_gist
+from .client import GitHubClient
 
 app = Blueprint("main", __name__)
 
@@ -100,7 +100,7 @@ def search():
     for gist in gists:
         gist_id = gist.get("id")
         gist_object = get_gist(gist_id)
-        if helpers.search_gist(pattern=pattern, gist_object=gist_object):
+        if search_gist(pattern=pattern, gist_object=gist_object):
             result["matches"].append(gist.get("html_url"))
 
     return jsonify(result)

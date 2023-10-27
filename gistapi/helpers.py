@@ -5,7 +5,7 @@ def search_file(pattern: str, content: str) -> bool:
     """
     Return True if given pattern produces a match for anywhere in a given content string, False otherwise
     """
-    return re.search(pattern, content)
+    return bool(re.search(pattern, content))
 
 
 def search_gist(pattern: str, gist_object: dict) -> bool:
