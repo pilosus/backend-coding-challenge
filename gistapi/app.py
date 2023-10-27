@@ -2,8 +2,8 @@ import marshmallow
 from flask import Flask
 
 import gistapi.errors as e
-from gistapi.client import GitHubClient
 from gistapi.api import blueprint
+from gistapi.client import GitHubClient
 
 
 def create_app():
@@ -25,6 +25,6 @@ def create_app():
     return app
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     my_app = create_app()
-    my_app.run(debug=True, host='0.0.0.0', port=9876)
+    my_app.run(debug=True, host="0.0.0.0", port=9876)

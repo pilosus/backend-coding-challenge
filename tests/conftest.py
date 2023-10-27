@@ -1,4 +1,5 @@
 import pytest
+
 from gistapi.app import create_app
 
 
@@ -18,9 +19,11 @@ def application(request):
     Flask app pushed into app context
     """
     app = create_app()
-    app.config.update({
-        "TESTING": True,
-    })
+    app.config.update(
+        {
+            "TESTING": True,
+        }
+    )
     with app.app_context():
         # TODO set up
         yield app

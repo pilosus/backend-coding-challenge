@@ -8,7 +8,7 @@ endpoint to verify the server is up and responding and a search endpoint
 providing a search across all public Gists for a given Github account.
 """
 
-from flask import jsonify, request, current_app, Blueprint
+from flask import Blueprint, current_app, jsonify, request
 
 from gistapi.helpers import search_gist
 from gistapi.schemas import SearchSchema
@@ -37,7 +37,7 @@ def gists_for_user(username: str):
         The dict parsed from the json response from the Github API.  See
         the above URL for details of the expected structure.
     """
-    gists_url = '/users/{username}/gists'.format(username=username)
+    gists_url = "/users/{username}/gists".format(username=username)
     return current_app.config["http"].request(method="GET", url=gists_url)
 
 
@@ -58,11 +58,11 @@ def get_gist(gist_id: str):
     """
     # gist_url = 'https://api.github.com/gists/{gist_id}'.format(gist_id=gist_id)
     # response = http(method="GET", url=gist_url)
-    gist_url = '/gists/{gist_id}'.format(gist_id=gist_id)
+    gist_url = "/gists/{gist_id}".format(gist_id=gist_id)
     return current_app.config["http"].request(method="GET", url=gist_url)
 
 
-@blueprint.route("/api/v1/search", methods=['POST'])
+@blueprint.route("/api/v1/search", methods=["POST"])
 def search():
     """Provides matches for a single pattern across a single users gists.
 
@@ -75,8 +75,8 @@ def search():
         indicating any failure conditions.
     """
     request_data = SearchSchema().load(request.get_json())
-    username = request_data['username']
-    pattern = request_data['pattern']
+    username = request_data["username"]
+    pattern = request_data["pattern"]
 
     result = {
         "status": "success",

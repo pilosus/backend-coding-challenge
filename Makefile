@@ -1,8 +1,25 @@
-.PHONY: install test serve clean
+.PHONY: install install-dev lint types test serve clean
+
+isort = isort gistapi tests
+black = black gistapi tests
+mypy = mypy --install-types --non-interactive gistapi
 
 install:
 	@echo "Install editable package"
 	pip install -e .
+
+install-dev:
+	@echo "Install dev tools"
+	pip install -e .[lint,test]
+
+lint:
+	@echo "Run linters & formatters"
+	$(isort)
+	$(black)
+
+types:
+	@echo "Check type hints"
+	$(mypy)
 
 test:
 	@echo "Run tests with coverage"
