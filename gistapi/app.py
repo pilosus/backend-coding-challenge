@@ -1,9 +1,10 @@
 import marshmallow
 from flask import Flask
 
-from gistapi import errors as e
+import gistapi.errors as e
 from gistapi.client import GitHubClient
 from gistapi.api import blueprint
+
 
 def create_app():
     """
