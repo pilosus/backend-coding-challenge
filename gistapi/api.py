@@ -8,11 +8,13 @@ endpoint to verify the server is up and responding and a search endpoint
 providing a search across all public Gists for a given Github account.
 """
 
+import marshmallow
 from flask import Flask, jsonify, request, current_app, Blueprint
 
 from gistapi.helpers import search_gist
 from gistapi.client import GitHubClient
 from gistapi.schemas import SearchSchema
+import gistapi.errors as e
 
 app = Blueprint("main", __name__)
 
@@ -22,8 +24,17 @@ def create_app():
     Return basic Flask app factory
     """
     flask_app = Flask(__name__)
+
+    # Clients in the app context
     flask_app.config["http"] = GitHubClient()
+
+    # Blueprints
     flask_app.register_blueprint(app)
+
+    # Error handling
+    flask_app.register_error_handler(marshmallow.ValidationError, e.request_validation_error)
+    flask_app.register_error_handler(Exception, e.generic_error)
+
     return flask_app
 
 
