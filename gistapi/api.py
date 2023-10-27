@@ -10,8 +10,9 @@ providing a search across all public Gists for a given Github account.
 
 from flask import Flask, jsonify, request, current_app, Blueprint
 
-from .helpers import search_gist
-from .client import GitHubClient
+from gistapi.helpers import search_gist
+from gistapi.client import GitHubClient
+from gistapi.schemas import SearchSchema
 
 app = Blueprint("main", __name__)
 
@@ -84,10 +85,9 @@ def search():
         object contains the list of matches along with a 'status' key
         indicating any failure conditions.
     """
-    post_data = request.get_json()
-
-    username = post_data['username']
-    pattern = post_data['pattern']
+    request_data = SearchSchema().load(request.get_json())
+    username = request_data['username']
+    pattern = request_data['pattern']
 
     result = {
         "status": "success",

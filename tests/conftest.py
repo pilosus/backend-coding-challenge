@@ -1,5 +1,5 @@
 import pytest
-from gistapi import create_app
+from gistapi.api import create_app
 
 
 def pytest_make_parametrize_id(config, val, argname):

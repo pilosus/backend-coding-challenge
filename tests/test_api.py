@@ -31,7 +31,7 @@ def test_ping(client):
         id="not_found",
     ),
 ])
-@mock.patch("gistapi.gistapi.gists_for_user")
+@mock.patch("gistapi.api.gists_for_user")
 @mock.patch("gistapi.client.GitHubClient.request")
 def test_search(github_mock, gists_mock, request_data, gists, content, expected, application, client):
     gists_mock.return_value = gists
