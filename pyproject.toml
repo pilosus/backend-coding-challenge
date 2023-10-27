@@ -12,6 +12,20 @@ authors = [
 dynamic = ["version"]
 requires-python = ">=3.11"
 
+dependencies = [
+    # Web
+    "Flask==2.3.3",
+    "requests==2.31.0",
+
+    # Data validation
+    "marshmallow==3.20.1",
+
+    # Testing
+    "pytest==7.4.3",
+    "pytest-cov==4.1.0"
+]
+
+
 [project.urls]
 "Source code" = "https://github.com/pilosus/backend-coding-challenge"
 

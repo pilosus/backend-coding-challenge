@@ -1,4 +1,4 @@
-.PHONY: install test clean
+.PHONY: install test serve clean
 
 install:
 	@echo "Install editable package"
@@ -7,6 +7,10 @@ install:
 test:
 	@echo "Run tests with coverage"
 	pytest -vvs --cov=gistapi tests
+
+serve:
+	@echo "Run Flask App Server"
+	python gistapi/api.py
 
 clean:
 	@echo "Clean up files"
