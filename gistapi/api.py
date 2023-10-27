@@ -19,7 +19,12 @@ blueprint = Blueprint("main", __name__)
 
 def get_max_page():
     """
-    Return maximum number of pages if pagination is needed
+    Return maximum number of pages if pagination is needed.
+
+    The docs
+    https://docs.github.com/en/rest/gists/gists?apiVersion=2022-11-28#list-public-gists
+    say we can get at most 3000 items with the help of pagination for _PUBLIC_ gists.
+    But max number of items for all the gists (including secret ones) is not documented!
     """
     return MAX_PAGES
 
