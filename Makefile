@@ -1,4 +1,4 @@
-.PHONY: install install-dev lint types test serve clean
+.PHONY: install install-dev lint types test cov serve clean
 
 isort = isort gistapi tests
 black = black gistapi tests
@@ -24,6 +24,10 @@ types:
 test:
 	@echo "Run tests with coverage"
 	pytest -vvs --cov=gistapi tests
+
+cov: test
+	@echo "Build coverage html"
+	coverage html
 
 serve:
 	@echo "Run Flask App Server"

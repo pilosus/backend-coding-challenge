@@ -13,7 +13,15 @@ from flask import Blueprint, current_app, jsonify, request
 from gistapi.helpers import search_gist
 from gistapi.schemas import SearchSchema
 
+MAX_PAGES = 1001
 blueprint = Blueprint("main", __name__)
+
+
+def get_max_page():
+    """
+    Return maximum number of pages if pagination is needed
+    """
+    return MAX_PAGES
 
 
 @blueprint.route("/ping")
@@ -37,8 +45,17 @@ def gists_for_user(username: str):
         The dict parsed from the json response from the Github API.  See
         the above URL for details of the expected structure.
     """
-    gists_url = "/users/{username}/gists".format(username=username)
-    return current_app.config["http"].request(method="GET", url=gists_url)
+    result = []
+    for page in range(1, get_max_page()):
+        url = "/users/{username}/gists?per_page=100&page={page}".format(
+            username=username, page=page
+        )
+        gists = current_app.config["http"].request(method="GET", url=url)
+        result.extend(gists)
+        if not gists:
+            return result
+
+    return result
 
 
 @blueprint.route("/api/v1/gists/<gist_id>")

@@ -33,7 +33,7 @@ class RequestError(Exception):
 
 def error_wrapper(exception: RequestError):
     response = jsonify(exception.to_dict())
-    return response
+    return response, exception.status_code
 
 
 def request_validation_error(exception: marshmallow.ValidationError):

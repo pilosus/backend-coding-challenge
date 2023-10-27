@@ -39,7 +39,7 @@ lint = [
 write_to = "_version.py"
 
 [tool.coverage.report]
-fail_under = 75
+fail_under = 85
 
 [tool.isort]
 atomic = true
