@@ -10,7 +10,7 @@ test:
 
 serve:
 	@echo "Run Flask App Server"
-	python gistapi/api.py
+	python gistapi/app.py
 
 clean:
 	@echo "Clean up files"

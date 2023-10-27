@@ -8,43 +8,21 @@ endpoint to verify the server is up and responding and a search endpoint
 providing a search across all public Gists for a given Github account.
 """
 
-import marshmallow
-from flask import Flask, jsonify, request, current_app, Blueprint
+from flask import jsonify, request, current_app, Blueprint
 
 from gistapi.helpers import search_gist
-from gistapi.client import GitHubClient
 from gistapi.schemas import SearchSchema
-import gistapi.errors as e
 
-app = Blueprint("main", __name__)
-
-
-def create_app():
-    """
-    Return basic Flask app factory
-    """
-    flask_app = Flask(__name__)
-
-    # Clients in the app context
-    flask_app.config["http"] = GitHubClient()
-
-    # Blueprints
-    flask_app.register_blueprint(app)
-
-    # Error handling
-    flask_app.register_error_handler(marshmallow.ValidationError, e.request_validation_error)
-    flask_app.register_error_handler(Exception, e.generic_error)
-
-    return flask_app
+blueprint = Blueprint("main", __name__)
 
 
-@app.route("/ping")
+@blueprint.route("/ping")
 def ping():
     """Provide a static response to a simple GET request."""
     return "pong"
 
 
-@app.route("/api/v1/users/<username>/gists")
+@blueprint.route("/api/v1/users/<username>/gists")
 def gists_for_user(username: str):
     """Provides the list of gist metadata for a given user.
 
@@ -63,7 +41,7 @@ def gists_for_user(username: str):
     return current_app.config["http"].request(method="GET", url=gists_url)
 
 
-@app.route("/api/v1/gists/<gist_id>")
+@blueprint.route("/api/v1/gists/<gist_id>")
 def get_gist(gist_id: str):
     """Provides the gist data for a given gist id.
 
@@ -84,7 +62,7 @@ def get_gist(gist_id: str):
     return current_app.config["http"].request(method="GET", url=gist_url)
 
 
-@app.route("/api/v1/search", methods=['POST'])
+@blueprint.route("/api/v1/search", methods=['POST'])
 def search():
     """Provides matches for a single pattern across a single users gists.
 
@@ -115,8 +93,3 @@ def search():
             result["matches"].append(gist.get("html_url"))
 
     return jsonify(result)
-
-
-if __name__ == '__main__':
-    my_app = create_app()
-    my_app.run(debug=True, host='0.0.0.0', port=9876)
