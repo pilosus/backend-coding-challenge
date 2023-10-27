@@ -8,11 +8,22 @@ endpoint to verify the server is up and responding and a search endpoint
 providing a search across all public Gists for a given Github account.
 """
 
-import requests
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, current_app, Blueprint
+
+import helpers
+from client import GitHubClient
+
+app = Blueprint("main", __name__)
 
 
-app = Flask(__name__)
+def create_app():
+    """
+    Return basic Flask app factory
+    """
+    flask_app = Flask(__name__)
+    flask_app.config["http"] = GitHubClient()
+    flask_app.register_blueprint(app)
+    return flask_app
 
 
 @app.route("/ping")
@@ -21,6 +32,7 @@ def ping():
     return "pong"
 
 
+@app.route("/api/v1/users/<username>/gists")
 def gists_for_user(username: str):
     """Provides the list of gist metadata for a given user.
 
@@ -35,9 +47,29 @@ def gists_for_user(username: str):
         The dict parsed from the json response from the Github API.  See
         the above URL for details of the expected structure.
     """
-    gists_url = 'https://api.github.com/users/{username}/gists'.format(username=username)
-    response = requests.get(gists_url)
-    return response.json()
+    gists_url = '/users/{username}/gists'.format(username=username)
+    return current_app.config["http"].request(method="GET", url=gists_url)
+
+
+@app.route("/api/v1/gists/<gist_id>")
+def get_gist(gist_id: str):
+    """Provides the gist data for a given gist id.
+
+    This abstracts the /gists/:gist_id endpoint from the Github API.
+    See https://developer.github.com/v3/gists/#get-a-gist for
+    more information.
+
+    Args:
+        gist_id (string): the unique identifier of the gist.
+
+    Returns:
+        The dict parsed from the json response from the Github API.  See
+        the above URL for details of the expected structure.
+    """
+    # gist_url = 'https://api.github.com/gists/{gist_id}'.format(gist_id=gist_id)
+    # response = http(method="GET", url=gist_url)
+    gist_url = '/gists/{gist_id}'.format(gist_id=gist_id)
+    return current_app.config["http"].request(method="GET", url=gist_url)
 
 
 @app.route("/api/v1/search", methods=['POST'])
@@ -57,20 +89,23 @@ def search():
     username = post_data['username']
     pattern = post_data['pattern']
 
-    result = {}
+    result = {
+        "status": "success",
+        "username": username,
+        "pattern": pattern,
+        "matches": [],
+    }
     gists = gists_for_user(username)
 
     for gist in gists:
-        # TODO: Fetch each gist and check for the pattern
-        pass
-
-    result['status'] = 'success'
-    result['username'] = username
-    result['pattern'] = pattern
-    result['matches'] = []
+        gist_id = gist.get("id")
+        gist_object = get_gist(gist_id)
+        if helpers.search_gist(pattern=pattern, gist_object=gist_object):
+            result["matches"].append(gist.get("html_url"))
 
     return jsonify(result)
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=9876)
+    my_app = create_app()
+    my_app.run(debug=True, host='0.0.0.0', port=9876)
