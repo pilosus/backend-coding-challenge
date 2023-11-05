@@ -2,9 +2,9 @@
 
 ## Requirements
 
-- Python 3.11 or
-- Docker (tested against v24.0.6) and optionally (testd against v2.21.0)
-- (optionally) GNU Make (tested against v4.4.1)
+- `Python 3.11` or
+- `docker` (tested against v24.0.6) and optionally `docker-compose` (tested against v2.21.0)
+- (optionally) `GNU Make` (tested against v4.4.1)
 
 ## Usage
 
@@ -24,7 +24,7 @@ make install
 make serve
 ```
 
-To run as a docker container:
+To run as a docker container (`.env` file is needed, see p. 3):
 
 ```bash
 docker compose up

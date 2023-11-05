@@ -2,6 +2,8 @@
 
 ## I. Can we use a database? What for? SQL or NoSQL?
 
+### Large number of gists/files
+
 Scanning through a large list of gists with possibly large number of files is costly.
 We can use NoSQL database (e.g. a key-value storage like Redis) in order to:
 
@@ -18,6 +20,18 @@ so the max gist size is limited to 100Mb. We may want to further improve searchi
 - Use background daemon to persist large text contents asynchronously as files or in a database 
 (MongoDB or even PostgreSQL will [probably](https://blog.rustprooflabs.com/2020/07/postgres-storing-large-text) do)
 - Search through the saved texts once daemon finishes its job
+
+### Respecting GitHub API rate limits
+
+Using GitHub API Key allows 5k requests per hour. Depending on how our service usage looks like, we may bump into
+rate limit errors from GitHub API side. In this case we may want to use a *request queue*.
+In the naive implementation a key-value DB like Redis can be used to implement time bucket rate limiting
+(set counter of N requests with expiration of K time units, decrease the counter if positive or refuse if negative).
+Leaky bucket rate limiting can be slightly better alternative, as it provides a buffer for request bursts
+(use [https://docs.python.org/3/library/collections.html#collections.deque](https://docs.python.org/3/library/collections.html#collections.deque)
+as a buffer limited by a given bucket size, + rate limiting requests to API to simulate leaking).
+In conjunction with Redis, Postgres queue-like table can also be used for background retries once limits are reset
+(client is given a timestamp when retry will happen)
 
 ## II. How can we protect the api from abusing it?
 
@@ -48,6 +62,8 @@ so the max gist size is limited to 100Mb. We may want to further improve searchi
 
 ### V. Any other topics you may find interesting and/or important to cover
 
+- Instead of Flask development server, use production-grade app server like `uWSGI` or `Gunicorn`.
+  (Optionally) use a proxy server like `nginx` to serve static files and or do advanced caching, load balancing, etc.
 - CI/CD pipelines to ensure quality (GitHub Actions/Workflows or GitLab or Jenkins)
 - Software composite analysis & Dependency management: 
   vulnerability scanner & dependency updater (GitHub Dependabot), 
